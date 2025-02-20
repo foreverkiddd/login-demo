@@ -10,8 +10,46 @@ app.use(express.json())   // http 외 모듈 'json'
 
 // 로그인
 app.post('/login', (req, res) => {
+    console.log(req.body)   // userId, pwd
 
+    // userId가 DB에 저장된 회원인지 확인
+    const {userId, pwd} = req.body
+    var loginUser = search(userId)
+
+    if (isExist(loginUser)) { // length === 1 일 것임
+        console.log(`같은 거 찾았다!`)
+        // pwd도 맞는지 비교 (자료형도 같아야 함)
+        if (loginUser.pwd === pwd) {
+            console.log(`패스워드 같습니다!`)
+        } else {
+            console.log(`패스워드 틀렸습니다!`)
+        }
+    } else {
+        console.log(`입력하신 ID는 없는 ID입니다.`)
+    }
 })
+
+// db.forEach문 따로 추출
+function search(searchId) {
+    let foundUser = {}
+
+    db.forEach(function(user, id) {
+        // forEach문 통해서 db에서 받은 user.userId와
+        // 내가 지금 body에서 받은 userId가 같으면?
+        if (user.userId === searchId) {
+            foundUser = user
+        }
+    })
+    return foundUser
+}
+
+function isExist(obj) {
+    if (Object.keys(obj).length) {
+        return true
+    } else {
+        return false
+    }
+}
 
 // 회원 가입
 app.post('/join', (req, res) => {
